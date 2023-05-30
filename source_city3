@@ -1,0 +1,88 @@
+#include <iostream>
+#include <limits>
+using namespace std;
+
+const int INFINITY = 9999;
+const int maxNodes = 6;
+
+void dijkstra(int graph[maxNodes][maxNodes], int numNodes, int startNode) {
+    int cost[maxNodes][maxNodes], distance[maxNodes], pred[maxNodes];
+    bool visited[maxNodes];
+
+    // Initialize cost matrix and distance array
+    for (int i = 0; i < numNodes; i++) {
+        for (int j = 0; j < numNodes; j++) {
+            if (graph[i][j] == 0)
+                cost[i][j] = INFINITY;
+            else
+                cost[i][j] = graph[i][j];
+        }
+    }
+
+    for (int i = 0; i < numNodes; i++) {
+        distance[i] = cost[startNode][i];
+        pred[i] = startNode;
+        visited[i] = false;
+    }
+
+    distance[startNode] = 0;
+    visited[startNode] = true;
+
+    for (int count = 1; count < numNodes - 1; count++) {
+        int minDistance = INFINITY;
+        int nextNode = -1;
+
+        // Find the node with the minimum distance
+        for (int i = 0; i < numNodes; i++) {
+            if (distance[i] < minDistance && !visited[i]) {
+                minDistance = distance[i];
+                nextNode = i;
+            }
+        }
+
+        if (nextNode == -1)
+            break;
+
+        // Update the distance and predecessor arrays
+        visited[nextNode] = true;
+        for (int i = 0; i < numNodes; i++) {
+            if (!visited[i] && (minDistance + cost[nextNode][i] < distance[i])) {
+                distance[i] = minDistance + cost[nextNode][i];
+                pred[i] = nextNode;
+            }
+        }
+    }
+
+    // Print the distance and path of each node
+    for (int i = 0; i < numNodes; i++) {
+        if (i != startNode) {
+            cout << "Distance from node " << startNode << " to " << i << " = " << distance[i] << endl;
+            cout << "Path: " << i;
+
+            int j = i;
+            do {
+                j = pred[j];
+                cout << " <- " << j;
+            } while (j != startNode);
+
+            cout << endl;
+        }
+    }
+}
+
+int main() {
+    int graph[maxNodes][maxNodes] = {
+        {0, 10, 0, 0, 15, 5},
+        {10, 0, 10, 30, 0, 0},
+        {0, 10, 0, 12, 5, 0},
+        {0, 30, 12, 0, 0, 20},
+        {15, 0, 5, 0, 0, 0},
+        {5, 0, 0, 20, 0, 0}
+    };
+    int numNodes = 6;
+    int startNode = 3;
+
+    dijkstra(graph, numNodes, startNode);
+
+    return 0;
+}
